@@ -1,4 +1,4 @@
-# Code for Rohden et al. (2024): "Glial reactivity is linked to synaptic dysfunction across the aging and Alzheimer’s disease continuum"
+# Code for Rohden et al. (2025): "Glial reactivity is linked to synaptic dysfunction across the aging and Alzheimer’s disease continuum"
 R code of the data analysis for the paper *"Glial reactivity is linked to synaptic dysfunction across the aging and Alzheimer’s disease continuum".*
 
 ## Required R packages
@@ -28,5 +28,5 @@ library(table1)
 
 ## Contact
 
-If you have any questions or suggestions please feel free to contact the corresponding author.
+If you have any questions or suggestions, please feel free to contact the corresponding author.
 
