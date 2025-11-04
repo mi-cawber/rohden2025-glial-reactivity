@@ -32,7 +32,7 @@ Abeta <- read.csv("C://UPENNBIOMK_ROCHE_ELECSYS.csv")
 
 adnimerge <- read.csv ("C://adnimerge.csv")
 
-#Filter by base line
+# Filter by base line
 adnimerge_bl = adnimerge %>%
   filter(VISCODE == "bl") 
 
@@ -69,20 +69,20 @@ TRIAD_cohort <- read.csv("C://TRIAD_cohort.csv")
 
 TOTAL  <-  TRIAD_cohort
 
-#Filter by base line or visit zero
+# Filter by base line or visit zero
 VM00 <- filter(TOTAL, visit == "VM00")
 
 
 ## To Both Cohorts ##
 
-#Filter of interesse biomarkers (GAP43, NG, GFAP, sTREM2)
+# Filter of interesse biomarkers (GAP43, NG, GFAP, sTREM2)
 VM00 = VM00 %>%
   filter(!is.na(biomarker))
 VM00 = VM00 %>% 
   filter(!is.na(biomarker)& biomarker != "NA" )
 VM00$biomarker <- as.numeric(VM00$biomarker)
 
-#outliers
+# Outliers
 mediana <- median(VM00$biomarker)
 IQR <- IQR(VM00$biomarker)
 
@@ -110,7 +110,7 @@ VM00$AB142_CSF <- as.numeric(VM00$AB142_CSF)
 VM00 <- VM00[VM00$AB142_CSF <= 1700, ]
 
 
-#Filter demografics#
+# Filter demographics
 VM00 = VM00 %>%
   filter(!is.na(sex))
 VM00$sex<- factor(VM00$sex, levels = c("F", "M"))
@@ -142,10 +142,10 @@ VM00 = VM00 %>%
   filter(!is.na(apoee4_alleles))
 VM00$APOE4<- factor(VM00$APOE4, levels = c("1", "0"))
 
-#z-score
+# z-score
 VM00$AGEz <- scale(VM00$AGE, center = TRUE, scale = TRUE)
 
-#Groups
+# Groups
 Years50 <- filter(VM00, AGE > 50) 
 
 CU = Years50 %>%
@@ -154,7 +154,7 @@ CU = Years50 %>%
 CI = Years50 %>%
   filter(DX ==  "CI")
 
-# Abeta positive and negative to ADNI #
+# Abeta positive and negative to ADNI
 
 CU_AB_neg = CU %>%
   filter (ABETA_bl >= 977)
@@ -166,7 +166,7 @@ CI_AB_pos = CI %>%
   filter (ABETA_bl < 977)
 
 
-# Abeta positive and negative to TRIAD #
+# Abeta positive and negative to TRIAD
 
 CU_AB_neg = CU %>%
   filter (AB42_40 >= 0.068) 
@@ -181,19 +181,19 @@ CI_AB_pos = CI %>%
   filter (AB42_40 < 0.068)
 
 
-#ANCOVA
+# ANOVA
 a_aov <- aov(GFAP_zscore ~ DX, data = ADNI)
 emm <- emmeans(a_aov, pairwise ~ DX, adjust = "tukey", pbkrtest.limit = 6000)
 summary(emm)
 
-#LM
+# LM
 Model <- lm(Synaptic_Biomarker ~ Glial_cell_Biomarker + sex + AGEz, data = Group) 
 summary(Model)
 conf_intervals <- confint(Model)
 conf_intervals <- confint(Model, level = 0.95)
 conf_intervals
 
-#Figures 1 and 2
+# Figures 1 and 2
 ggplot(Group, aes (x = Glial_cell_Biomarker, y = Synaptic_Biomarker)) +
   geom_point(fill = "#00fa9a" , shape = 21 , size = 10 )+
   xlab("Biomarker (z-score)")+
@@ -203,7 +203,7 @@ ggplot(Group, aes (x = Glial_cell_Biomarker, y = Synaptic_Biomarker)) +
   geom_smooth (aes (x = Biomarker, y = Biomarker), method = "lm", se = TRUE, color = "black",
                size = 1 )
 
-#LOWESS and figure 3
+# LOWESS and figure 3
 GAP43z_norm <-lm(GAP43_normalized ~  age_at_mri + sex, data = Years50)
 variable_GAP43z <- resid(GAP43z_norm)
 mean_GAP43z <- mean(Years50$GAP43_normalized)
@@ -259,7 +259,7 @@ lines(lowess(c$sTREMz, c$ng_z,f=0.95, iter=1500), col="#c21e56", lwd=c(8))
 
 
 
-#Mediation
+# Mediation
 
 model.0 <- lm(Synaptic_Biomarker ~ CSFpTau181 + AGEz + SEX , data= CU_AB_neg)
 summary(model.0)
@@ -273,4 +273,3 @@ summary(model.Y)
 library(mediation)
 results <- mediate(model.M, model.Y, treat='Glial cell Biomarker', mediator='CSFpTAU',
                    boot=TRUE, sims=500)
-
